@@ -18,6 +18,7 @@ public class RepoMakerTestCase extends TestCase {
 	}
 
 	private void clearOutput(File dir) {
+		if (null == dir || !dir.exists()) return;
 		for (File file : dir.listFiles()) {
 			if (file.isDirectory()) {
 				clearOutput(file);
