@@ -5,9 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Stack;
@@ -18,6 +20,7 @@ import org.stringtree.converter.TemplateFileConverter;
 import org.stringtree.solomon.EasySolomon;
 import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
+import org.stringtree.util.FileReadingUtils;
 import org.stringtree.util.FileWritingUtils;
 import org.stringtree.util.LiteralMap;
 
@@ -46,10 +49,11 @@ public class RepoMaker {
 
 	public void make() throws IOException {
 		Stack<String> path = new Stack<String>();
-		crawl(in, out, path);
+		crawl(in, out, path, null, null);
 	}
 
-	private void crawl(File indir, File outdir, Stack<String> path) throws IOException {
+	private void crawl(File indir, File outdir, 
+			Stack<String> path, String id, String version) throws IOException {
 		if (!outdir.exists()) {
 			outdir.mkdirs();
 		}
@@ -57,15 +61,15 @@ public class RepoMaker {
 			String name = file.getName();
 			File destFile = new File(outdir, name);
 			if (isNameDir(file)) {
-				path.push(name);
-				crawl(new File(indir, name), destFile, path);
-				path.pop();
+				crawl(new File(indir, name), destFile, path, name, version);
 				File metadata = createMetadata(destFile, path);
 				createMD5Hash(metadata);
 				createSHAHash(metadata);
+			} else if (isVersionDir(file)) {
+				crawl(new File(indir, name), destFile, path, id, file.getName());
 			} else if (isGroupDir(file)) {
 				path.push(name);
-				crawl(new File(indir, name), destFile, path);
+				crawl(new File(indir, name), destFile, path, id, version);
 				path.pop();
 			} else if (isArtefact(file)){
 				copy(file, destFile);
@@ -73,7 +77,7 @@ public class RepoMaker {
 				createSHAHash(destFile);
 				if (isPrimaryArtefact(file)) {
 					File pom = new File(outdir, name.replace(".jar", ".pom"));
-					createPOM(file, pom);
+					createPOM(file, pom, path, id, version);
 					createMD5Hash(pom);
 					createSHAHash(pom);
 				}
@@ -82,6 +86,10 @@ public class RepoMaker {
 			}
 		}
 		createIndex(outdir);
+	}
+
+	private boolean isVersionDir(File file) {
+		return file.getName().matches("[\\d.]+");
 	}
 
 	private boolean isNameDir(File file) {
@@ -123,44 +131,56 @@ public class RepoMaker {
 	}
 
 	private String maxVersion(Collection<String> versions) {
-		return "1.0";
+		String sofar = "0";
+		for (String version : versions) {
+			if (version.compareTo(sofar) > 0) {
+				sofar = version;
+			}
+		}
+		
+		return sofar;
 	}
 
 	private Collection<String> findChildVersions(File file) {
-		return Arrays.asList("1.0");
+		Collection<String> ret = new ArrayList<String>();
+		for (String name : file.list()) {
+			if (name.matches("[\\d.]+")) {
+				ret.add(name);
+			}
+		}
+
+		return ret;
 	}
 
-	private void createPOM(File file, File pom) throws IOException {
+	private void createPOM(File file, File pom, Stack<String> path, String id, String version) throws IOException {
 		EasySolomon solomon = new EasySolomon(templates);
 		Session session = new Session();
 		
-		String path = extractPath(file);
-		String name = extractName(file);
-		String version = extractVersion(file);
 		solomon.put("group", path);
-		solomon.put("name", name);
+		solomon.put("name", id);
 		solomon.put("version", version);
 		FileWritingUtils.writeFile(pom, solomon.toString("pom", session));
 	}
 
-	private String extractVersion(File file) {
-		return "1.0";
-	}
+	private void createHash(File destFile, String alogorithm, String extension) throws IOException {
+		byte[] bytesOfMessage = FileReadingUtils.readFileBytes(destFile);
 
-	private String extractName(File file) {
-		return "something";
-	}
-
-	private String extractPath(File file) {
-		return "";
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance(alogorithm);
+			byte[] digest = md.digest(bytesOfMessage);
+			FileWritingUtils.writeFile(new File(destFile.getParentFile(), destFile.getName() + "." + extension), digest);
+		} catch (NoSuchAlgorithmException e) {
+			throw new IOException("could not generate Hash using algorithm [" + alogorithm + "]", e);
+		}
 	}
 
 	private void createMD5Hash(File destFile) throws IOException {
-		new File(destFile.getParentFile(), destFile.getName() + ".md5").createNewFile();
+		createHash(destFile, "MD5", "md5");
 	}
 
 	private void createSHAHash(File destFile) throws IOException {
-		new File(destFile.getParentFile(), destFile.getName() + ".sha1").createNewFile();
+		createHash(destFile, "SHA1", "sha1");
 	}
 
 	private void createIndex(File outdir) throws IOException {
