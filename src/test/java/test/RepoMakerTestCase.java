@@ -9,12 +9,18 @@ import junit.framework.TestCase;
 
 public class RepoMakerTestCase extends TestCase {
 
+	File generated;
+	
 	protected File make(String dir) throws IOException {
 		RepoMaker maker = new RepoMaker("src/test/input/" + dir, "src/test/output/" + dir);
-		File ret = new File("src/test/output/" + dir);
-		clearOutput(ret);
+		generated = new File("src/test/output/" + dir);
+		clearOutput();
 		maker.make();
-		return ret;
+		return generated;
+	}
+
+	private void clearOutput() {
+		clearOutput(generated);
 	}
 
 	private void clearOutput(File dir) {
@@ -29,4 +35,7 @@ public class RepoMakerTestCase extends TestCase {
 		dir.delete();
 	}
 
+	protected void assertFileExists(String name) {
+		assertTrue(new File(generated, name).exists());
+	}
 }
