@@ -1,0 +1,8 @@
+TODO
+----
+
++ generate index file contents
++ add a main method
++ test it with a real build
+
+ 
