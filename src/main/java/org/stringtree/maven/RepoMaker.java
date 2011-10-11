@@ -33,9 +33,9 @@ public class RepoMaker {
 				crawl(new File(indir, name), new File(outdir, name));
 			} else {
 				copy(file, outdir);
-				createIndex(outdir);
 			}
 		}
+		createIndex(outdir);
 	}
 
 	private void createIndex(File outdir) throws IOException {

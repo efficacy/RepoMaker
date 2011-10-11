@@ -17,6 +17,7 @@ public class ErrorTests extends RepoMakerTestCase {
 	public void testNoArtefacts() throws IOException {
 		File dir = make("empty");
 		assertTrue(dir.exists() && dir.isDirectory());
-		assertEquals(0, dir.list().length);
+		assertEquals(1, dir.list().length);
+		assertTrue(new File(dir, "index.html").exists());
 	}
 }
