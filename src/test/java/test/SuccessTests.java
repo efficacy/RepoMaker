@@ -12,6 +12,9 @@ public class SuccessTests extends RepoMakerTestCase {
 		assertTrue(new File(dir, "org/index.html").exists());
 		assertTrue(new File(dir, "org/stringtree/index.html").exists());
 		assertTrue(new File(dir, "org/stringtree/something/index.html").exists());
+		assertTrue(new File(dir, "org/stringtree/something/metadata.xml").exists());
+		assertTrue(new File(dir, "org/stringtree/something/metadata.xml.md5").exists());
+		assertTrue(new File(dir, "org/stringtree/something/metadata.xml.sha1").exists());
 		assertTrue(new File(dir, "org/stringtree/something/1.0/index.html").exists());
 		assertTrue(new File(dir, "org/stringtree/something/1.0/something-1.0.jar").exists());
 		assertTrue(new File(dir, "org/stringtree/something/1.0/something-1.0.jar.md5").exists());
@@ -28,6 +31,9 @@ public class SuccessTests extends RepoMakerTestCase {
 		assertTrue(new File(dir, "org/index.html").exists());
 		assertTrue(new File(dir, "org/stringtree/index.html").exists());
 		assertTrue(new File(dir, "org/stringtree/something/index.html").exists());
+		assertTrue(new File(dir, "org/stringtree/something/metadata.xml").exists());
+		assertTrue(new File(dir, "org/stringtree/something/metadata.xml.md5").exists());
+		assertTrue(new File(dir, "org/stringtree/something/metadata.xml.sha1").exists());
 		assertTrue(new File(dir, "org/stringtree/something/1.0/index.html").exists());
 		assertTrue(new File(dir, "org/stringtree/something/1.0/something-1.0.jar").exists());
 		assertTrue(new File(dir, "org/stringtree/something/1.0/something-1.0.jar.md5").exists());

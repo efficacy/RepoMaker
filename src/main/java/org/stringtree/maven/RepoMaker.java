@@ -14,7 +14,6 @@ import java.util.Stack;
 
 import org.stringtree.Context;
 import org.stringtree.context.ConvertingContext;
-import org.stringtree.context.MapContext;
 import org.stringtree.converter.TemplateFileConverter;
 import org.stringtree.solomon.EasySolomon;
 import org.stringtree.solomon.Session;
