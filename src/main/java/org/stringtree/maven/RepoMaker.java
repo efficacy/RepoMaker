@@ -1,7 +1,10 @@
 package org.stringtree.maven;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 public class RepoMaker {
 
@@ -29,8 +32,36 @@ public class RepoMaker {
 			if (file.isDirectory()) {
 				crawl(new File(indir, name), new File(outdir, name));
 			} else {
+				copy(file, outdir);
+				createIndex(outdir);
 			}
 		}
 	}
 
+	private void createIndex(File outdir) throws IOException {
+		new File(outdir, "index.html").createNewFile();
+	}
+
+	public static void copy(File file, File outdir) throws IOException {
+		File destFile = new File(outdir, file.getName());
+		if(!destFile.exists()) {
+			destFile.createNewFile();
+		}
+		
+		FileChannel source = null;
+		FileChannel destination = null;
+		try {
+			source = new FileInputStream(file).getChannel();
+			destination = new FileOutputStream(destFile).getChannel();
+			destination.transferFrom(source, 0, source.size());
+		}
+		finally {
+			if(source != null) {
+			source.close();
+		}
+		if(destination != null) {
+			destination.close();
+			}
+		}
+	}
 }
