@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 import org.stringtree.Context;
@@ -184,6 +186,15 @@ public class RepoMaker {
 	}
 
 	private void createIndex(File outdir) throws IOException {
+		Collection<Map<String, Object>> children = new ArrayList<Map<String,Object>>();
+		for (File file : outdir.listFiles()) {
+			Map<String, Object> child = new HashMap<String, Object>();
+			String name = file.getName();
+			child.put("name", name);
+			child.put("url", name);
+			child.put("date", file.lastModified());
+			child.put("size", file.length());
+		}
 		new File(outdir, "index.html").createNewFile();
 	}
 

@@ -2,5 +2,7 @@
 ${breadcrumbs*crumb}
 <br/>
 <h1>${page}</h1>
-${children*child}
+<table border='0'>
+${children*index_child/}
+</table>
 </body></html>
