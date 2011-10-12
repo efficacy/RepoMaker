@@ -31,7 +31,9 @@ public class RepoMaker {
 	private File in;
 	private File out;
 	private Context<Template> templates;
-	private DateFormat df;
+
+	private DateFormat mavenTimestampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+	private DateFormat modifiedFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 	public RepoMaker(File in, File out) throws IOException {
 		this.in = in;
@@ -42,7 +44,6 @@ public class RepoMaker {
 		templates = new ConvertingContext<Template>(
 			new TemplateFileConverter(new File("src/main/resources/templates"),
 				new LiteralMap<String, Boolean>(".tpl", false)));
-		df = new SimpleDateFormat("yyyyMMddHHmmssSS");
 	}
 
 	public RepoMaker(String in, String out) throws IOException {
@@ -52,6 +53,7 @@ public class RepoMaker {
 	public void make() throws IOException {
 		Stack<String> path = new Stack<String>();
 		crawl(in, out, path, null, null);
+		createIndex(out);
 	}
 
 	private void crawl(File indir, File outdir, 
@@ -59,6 +61,10 @@ public class RepoMaker {
 		if (!outdir.exists()) {
 			outdir.mkdirs();
 		}
+		if (!indir.isDirectory()) {
+			return;
+		}
+		
 		for (File file : indir.listFiles()) {
 			String name = file.getName();
 			File destFile = new File(outdir, name);
@@ -67,12 +73,15 @@ public class RepoMaker {
 				File metadata = createMetadata(destFile, path);
 				createMD5Hash(metadata);
 				createSHAHash(metadata);
+				createIndex(destFile);
 			} else if (isVersionDir(file)) {
 				crawl(new File(indir, name), destFile, path, id, file.getName());
+				createIndex(destFile);
 			} else if (isGroupDir(file)) {
 				path.push(name);
 				crawl(new File(indir, name), destFile, path, id, version);
 				path.pop();
+				createIndex(destFile);
 			} else if (isArtefact(file)){
 				copy(file, destFile);
 				createMD5Hash(destFile);
@@ -87,7 +96,6 @@ public class RepoMaker {
 				System.err.println("WARNING: ignored unknown file type [" + name + "]");
 			}
 		}
-		createIndex(outdir);
 	}
 
 	private boolean isVersionDir(File file) {
@@ -126,7 +134,7 @@ public class RepoMaker {
 		solomon.put("name", name);
 		solomon.put("latest", latest);
 		solomon.put("versions", versions);
-		solomon.put("stamp", df.format(new Date()));
+		solomon.put("stamp", mavenTimestampFormat.format(new Date()));
 		File ret = new File(dir,"metadata.xml");
 		FileWritingUtils.writeFile(ret, solomon.toString("metadata", session));
 		return ret;
@@ -184,18 +192,29 @@ public class RepoMaker {
 	private void createSHAHash(File destFile) throws IOException {
 		createHash(destFile, "SHA1", "sha1");
 	}
-
+	
 	private void createIndex(File outdir) throws IOException {
 		Collection<Map<String, Object>> children = new ArrayList<Map<String,Object>>();
 		for (File file : outdir.listFiles()) {
 			Map<String, Object> child = new HashMap<String, Object>();
 			String name = file.getName();
+			child.put("isdir", file.isDirectory());
 			child.put("name", name);
-			child.put("url", name);
-			child.put("date", file.lastModified());
-			child.put("size", file.length());
+			child.put("url", file.isDirectory() ? name + "/index.html" : name);
+			child.put("date", modifiedFormat.format(file.lastModified()));
+			if (!file.isDirectory()) {
+				child.put("filesize", file.length() + " bytes");
+			}
+			children.add(child);
 		}
-		new File(outdir, "index.html").createNewFile();
+		EasySolomon solomon = new EasySolomon(templates);
+		Session session = new Session();
+		
+		solomon.put("children", children);
+		solomon.put("site", "Maven Repository");
+		solomon.put("page", outdir.getName());
+		File ret = new File(outdir,"index.html");
+		FileWritingUtils.writeFile(ret, solomon.toString("index", session));
 	}
 
 	public static void copy(File from, File destFile) throws IOException {

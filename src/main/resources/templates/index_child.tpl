@@ -1,1 +1,1 @@
- <tr><td><a href="${this.url}">${this.name}</a></td><td>${this.date}</td><td>${this.size} bytes</td></tr>
+ [[${this}]]<tr><td><a href="${this.url}">${this.name}</a></td><td>${this.date}</td><td>${this.filesize?:'&nbsp;'}</td></tr>
