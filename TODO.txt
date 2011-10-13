@@ -15,5 +15,5 @@ DONE
 2011-10-11 generate index file contents
 2011-10-12 fix incorrect file sizes in index
 2011-10-13 include snapshot versions in index and metadata
-
+2011-10-13 exclude "hidden" (.something, e.g. .gitignore) files from crawl
  

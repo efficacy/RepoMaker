@@ -3,6 +3,7 @@ package org.stringtree.maven;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -65,7 +66,11 @@ public class RepoMaker {
 			return;
 		}
 		
-		for (File file : indir.listFiles()) {
+		for (File file : indir.listFiles(new FilenameFilter() {
+			@Override public boolean accept(File dir, String name) {
+				return !name.startsWith(".");
+			}
+		})) {
 			String name = file.getName();
 			File destFile = new File(outdir, name);
 			if (isNameDir(file)) {
@@ -140,7 +145,6 @@ public class RepoMaker {
 		solomon.put("versions", versions);
 		solomon.put("stamp", mavenTimestampFormat.format(new Date()));
 		File ret = new File(dir,"metadata.xml");
-System.err.println("about to expand context=" + solomon.getContext());
 		FileWritingUtils.writeFile(ret, solomon.toString("metadata", session));
 		return ret;
 	}
