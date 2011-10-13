@@ -9,11 +9,15 @@ import junit.framework.TestCase;
 
 public class RepoMakerTestCase extends TestCase {
 
-	File generated;
+	protected File generated;
 	
 	protected File make(String dir) throws IOException {
-		RepoMaker maker = new RepoMaker("src/test/input/" + dir, "src/test/output/" + dir);
-		generated = new File("src/test/output/" + dir);
+		return make(dir, dir);
+	}
+	
+	protected File make(String from, String to) throws IOException {
+		RepoMaker maker = new RepoMaker("src/test/input/" + from, "src/test/output/" + to);
+		generated = new File("src/test/output/" + to);
 		clearOutput();
 		maker.make();
 		return generated;
