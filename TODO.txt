@@ -1,8 +1,19 @@
 TODO
 ----
 
-+ generate index file contents
 + add a main method
++ add an ant task
 + test it with a real build
++ correctly identify and process arbitrary clasifiers (e.g.sources)
++ correctly identify and process arbitrary (non-numeric) versions
++ process "flat" input (i.e bunch of jars org.stringtree.something-1.0.jar in the same dir
++ make index files look a bit nicer (full path in header, readable file sizes etc.
++ optionally generate ivy layout ( http://wiki.jfrog.org/confluence/display/RTF/Repository+Layouts )
+
+DONE
+----
+2011-10-11 generate index file contents
+2011-10-12 fix incorrect file sizes in index
+2011-10-13 include snapshot versions in index and metadata
 
  
