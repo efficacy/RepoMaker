@@ -11,6 +11,10 @@ public class RepoMakerTestCase extends TestCase {
 
 	protected File generated;
 	
+	public void setUp() {
+		clearOutput();
+	}
+	
 	protected File make(String dir) throws IOException {
 		return make(dir, dir);
 	}
@@ -18,13 +22,12 @@ public class RepoMakerTestCase extends TestCase {
 	protected File make(String from, String to) throws IOException {
 		RepoMaker maker = new RepoMaker("src/test/input/" + from, "src/test/output/" + to);
 		generated = new File("src/test/output/" + to);
-		clearOutput();
 		maker.make();
 		return generated;
 	}
 
-	private void clearOutput() {
-		clearOutput(generated);
+	protected void clearOutput() {
+		clearOutput(new File("src/text/output"));
 	}
 
 	private void clearOutput(File dir) {
@@ -32,11 +35,11 @@ public class RepoMakerTestCase extends TestCase {
 		for (File file : dir.listFiles()) {
 			if (file.isDirectory()) {
 				clearOutput(file);
+				dir.delete();
 			} else {
 				file.delete();
 			}
 		}
-		dir.delete();
 	}
 
 	protected void assertFileExists(String name) {

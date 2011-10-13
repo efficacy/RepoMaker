@@ -8,8 +8,12 @@ import org.stringtree.util.FileReadingUtils;
 public class SuccessTests extends RepoMakerTestCase {
 
 	public void testSingle() throws IOException {
-		File dir = make("single");
-		assertTrue(dir.exists() && dir.isDirectory());
+		make("single");
+
+		validateSingleExample();
+	}
+
+	public void validateSingleExample() {
 		assertFileExists("index.html");
 		assertFileExists("org/index.html");
 		assertFileExists("org/stringtree/index.html");
@@ -51,20 +55,7 @@ public class SuccessTests extends RepoMakerTestCase {
 	public void testMultipleVersions() throws IOException {
 		make("multiple-versions");
 
-		assertFileExists("index.html");
-		assertFileExists("org/index.html");
-		assertFileExists("org/stringtree/index.html");
-		assertFileExists("org/stringtree/something/index.html");
-		assertFileExists("org/stringtree/something/metadata.xml");
-		assertFileExists("org/stringtree/something/metadata.xml.md5");
-		assertFileExists("org/stringtree/something/metadata.xml.sha1");
-		assertFileExists("org/stringtree/something/1.0/index.html");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.jar");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.jar.md5");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.jar.sha1");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.pom");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.pom.md5");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.pom.sha1");
+		validateSingleExample();
 		assertFileExists("org/stringtree/something/1.1/index.html");
 		assertFileExists("org/stringtree/something/1.1/something-1.1.jar");
 		assertFileExists("org/stringtree/something/1.1/something-1.1.jar.md5");
@@ -91,21 +82,18 @@ public class SuccessTests extends RepoMakerTestCase {
 		validateSnapshotExample();
 	}
 
+	public void testMerge() throws IOException {
+		make("single", "merge");
+		
+		validateSingleExample();
+		
+		make("merge");
+
+		validateSnapshotExample();
+	}
+
 	public void validateSnapshotExample() {
-		assertFileExists("index.html");
-		assertFileExists("org/index.html");
-		assertFileExists("org/stringtree/index.html");
-		assertFileExists("org/stringtree/something/index.html");
-		assertFileExists("org/stringtree/something/metadata.xml");
-		assertFileExists("org/stringtree/something/metadata.xml.md5");
-		assertFileExists("org/stringtree/something/metadata.xml.sha1");
-		assertFileExists("org/stringtree/something/1.0/index.html");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.jar");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.jar.md5");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.jar.sha1");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.pom");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.pom.md5");
-		assertFileExists("org/stringtree/something/1.0/something-1.0.pom.sha1");
+		validateSingleExample();
 		assertFileExists("org/stringtree/something/1.1-SNAPSHOT/index.html");
 		assertFileExists("org/stringtree/something/1.1-SNAPSHOT/something-1.1-201110121233.jar");
 		assertFileExists("org/stringtree/something/1.1-SNAPSHOT/something-1.1-201110121233.jar.md5");
