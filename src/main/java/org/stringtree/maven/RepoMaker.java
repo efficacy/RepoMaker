@@ -130,21 +130,52 @@ public class RepoMaker {
 		String name = dir.getName();
 		Collection<String> versions = findChildVersions(dir);
 		String latest = maxVersion(versions);
+		String release = maxReleaseVersion(versions);
+		String snapshot = maxSnapshotVersion(versions);
 		solomon.put("group", path);
 		solomon.put("name", name);
 		solomon.put("latest", latest);
+		solomon.put("release", release);
+		solomon.put("snapshot", snapshot);
 		solomon.put("versions", versions);
 		solomon.put("stamp", mavenTimestampFormat.format(new Date()));
 		File ret = new File(dir,"metadata.xml");
+System.err.println("about to expand context=" + solomon.getContext());
 		FileWritingUtils.writeFile(ret, solomon.toString("metadata", session));
 		return ret;
 	}
 
 	private String maxVersion(Collection<String> versions) {
-		String sofar = "0";
+		String sofar = null;
 		for (String version : versions) {
-			if (version.compareTo(sofar) > 0) {
+			if (null == sofar || (version.compareTo(sofar) > 0)) {
 				sofar = version;
+			}
+		}
+		
+		return sofar;
+	}
+
+	private String maxReleaseVersion(Collection<String> versions) {
+		String sofar = null;
+		for (String version : versions) {
+			if (!version.toLowerCase().contains("snapshot")) {
+				if (null == sofar || (version.compareTo(sofar) > 0)) {
+					sofar = version;
+				}
+			}
+		}
+		
+		return sofar;
+	}
+
+	private String maxSnapshotVersion(Collection<String> versions) {
+		String sofar = null;
+		for (String version : versions) {
+			if (version.toLowerCase().contains("snapshot")) {
+				if (null == sofar || (version.compareTo(sofar) > 0)) {
+					sofar = version;
+				}
 			}
 		}
 		
@@ -154,7 +185,7 @@ public class RepoMaker {
 	private Collection<String> findChildVersions(File file) {
 		Collection<String> ret = new ArrayList<String>();
 		for (String name : file.list()) {
-			if (name.matches("[\\d.]+")) {
+			if (name.matches("[\\d.]+(-SNAPSHOT)?")) {
 				ret.add(name);
 			}
 		}
