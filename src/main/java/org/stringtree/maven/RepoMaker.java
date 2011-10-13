@@ -87,19 +87,72 @@ public class RepoMaker {
 				crawl(new File(indir, name), destFile, path, id, version);
 				path.pop();
 				createIndex(destFile);
+			} else if (isFlatArtefact(file)){
+				destFile = buildStructure(outdir, file);
+				copy(file, destFile);
+				derive(path, id, version, destFile);
 			} else if (isArtefact(file)){
 				copy(file, destFile);
-				createMD5Hash(destFile);
-				createSHAHash(destFile);
-				if (isPrimaryArtefact(file)) {
-					File pom = new File(outdir, name.replace(".jar", ".pom"));
-					createPOM(file, pom, path, id, version);
-					createMD5Hash(pom);
-					createSHAHash(pom);
-				}
+				derive(path, id, version, destFile);
 			} else {
 				System.err.println("WARNING: ignored unknown file type [" + name + "]");
 			}
+		}
+	}
+
+	private File buildStructure(File dir, File file) throws IOException {
+		Stack<String> path = new Stack<String>();
+		String[] parts = file.getName().split("\\.");
+		StringBuilder tail = new StringBuilder();
+		for (String part : parts) {
+			if (tail.length() > 0 || part.contains("-")) {
+				if (tail.length() > 0) tail.append('.');
+				tail.append(part);
+				continue;
+			}
+			dir = new File(dir, part);
+			dir.mkdirs();
+			createIndex(dir);
+			path.push(part);
+		}
+
+		String filename = tail.toString();
+		
+		int dash = filename.indexOf('-');
+		String name = filename.substring(0, dash);
+		dir = new File(dir, name);
+		dir.mkdirs();
+		File metadata = createMetadata(dir, path);
+		createMD5Hash(metadata);
+		createSHAHash(metadata);
+		createIndex(dir);
+
+		String version = filename.substring(dash+1);
+		version = version.substring(0, version.lastIndexOf('.'));
+		if (version.contains("-SNAPSHOT")) {
+			version = version.substring(0,version.lastIndexOf("-"));
+			filename = filename.replace("-SNAPSHOT", "");
+		}
+		dir = new File(dir, version);
+		dir.mkdirs();
+		createIndex(dir);
+		
+		return new File(dir, filename);
+	}
+
+	private boolean isFlatArtefact(File file) {
+		return file.getName().matches("([^\\.-]+\\.)+.*");
+	}
+
+	public void derive(Stack<String> path, String id, String version, File destFile) throws IOException {
+		File outdir = destFile.getParentFile();
+		createMD5Hash(destFile);
+		createSHAHash(destFile);
+		if (isPrimaryArtefact(destFile)) {
+			File pom = new File(outdir, destFile.getName().replace(".jar", ".pom"));
+			createPOM(destFile, pom, path, id, version);
+			createMD5Hash(pom);
+			createSHAHash(pom);
 		}
 	}
 
