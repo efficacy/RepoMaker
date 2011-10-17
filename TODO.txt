@@ -1,10 +1,8 @@
 TODO
 ----
 
-+ add a main method
 + add an ant task
 + test it with a real build
-+ correctly identify and process arbitrary classifiers (e.g.sources)
 + correctly identify and process arbitrary (non-numeric) versions
 + make index files look a bit nicer (full path in header, readable file sizes etc.
 + optionally generate ivy layout ( http://wiki.jfrog.org/confluence/display/RTF/Repository+Layouts )
@@ -16,4 +14,6 @@ DONE
 2011-10-13 include snapshot versions in index and metadata
 2011-10-13 exclude "hidden" (.something, e.g. .gitignore) files from crawl
 2011-10-13 process "flat" input (i.e bunch of jars org.stringtree.something-1.0.jar in the same dir
+2011-10-17 correctly identify and process arbitrary classifiers (e.g.sources)
+2011-10-17 add a main method
  
