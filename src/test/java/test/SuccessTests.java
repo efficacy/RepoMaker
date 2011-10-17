@@ -33,6 +33,16 @@ public class SuccessTests extends RepoMakerTestCase {
 	public void testSingleWithSources() throws IOException {
 		make("single-sources");
 
+		validateSingleWithSources();
+	}
+
+	public void testFlatSingleWithSources() throws IOException {
+		make("flat-single-sources");
+
+		validateSingleWithSources();
+	}
+
+	public void validateSingleWithSources() {
 		assertFileExists("index.html");
 		assertFileExists("org/index.html");
 		assertFileExists("org/stringtree/index.html");
@@ -55,6 +65,16 @@ public class SuccessTests extends RepoMakerTestCase {
 	public void testMultipleVersions() throws IOException {
 		make("multiple-versions");
 
+		validateMultipleVersions();
+	}
+
+	public void testFlatMultipleVersions() throws IOException {
+		make("flat-multiple-versions");
+
+		validateMultipleVersions();
+	}
+
+	public void validateMultipleVersions() {
 		validateSingleExample();
 		assertFileExists("org/stringtree/something/1.1/index.html");
 		assertFileExists("org/stringtree/something/1.1/something-1.1.jar");
@@ -76,8 +96,8 @@ public class SuccessTests extends RepoMakerTestCase {
 		validateSnapshotExample();
 	}
 
-	public void testFlat() throws IOException {
-		make("flat");
+	public void testFlatSnapshots() throws IOException {
+		make("flat-snapshots");
 
 		validateSnapshotExample();
 	}

@@ -57,8 +57,7 @@ public class RepoMaker {
 		createIndex(out);
 	}
 
-	private void crawl(File indir, File outdir, 
-			Stack<String> path, String id, String version) throws IOException {
+	private void crawl(File indir, File outdir, Stack<String> path, String id, String version) throws IOException {
 		if (!outdir.exists()) {
 			outdir.mkdirs();
 		}
@@ -105,8 +104,10 @@ public class RepoMaker {
 		String[] parts = file.getName().split("\\.");
 		StringBuilder tail = new StringBuilder();
 		for (String part : parts) {
-			if (tail.length() > 0 || part.contains("-")) {
-				if (tail.length() > 0) tail.append('.');
+			boolean isComposite = part.contains("-");
+			boolean hasTail = tail.length() > 0;
+			if (hasTail || isComposite) {
+				if (hasTail) tail.append('.');
 				tail.append(part);
 				continue;
 			}
@@ -129,9 +130,11 @@ public class RepoMaker {
 
 		String version = filename.substring(dash+1);
 		version = version.substring(0, version.lastIndexOf('.'));
-		if (version.contains("-SNAPSHOT")) {
+		if (version.contains("-")) {
+			if (version.contains("-SNAPSHOT")) {
+				filename = filename.replace("-SNAPSHOT", "");
+			}
 			version = version.substring(0,version.lastIndexOf("-"));
-			filename = filename.replace("-SNAPSHOT", "");
 		}
 		dir = new File(dir, version);
 		dir.mkdirs();
@@ -198,7 +201,9 @@ public class RepoMaker {
 		solomon.put("versions", versions);
 		solomon.put("stamp", mavenTimestampFormat.format(new Date()));
 		File ret = new File(dir,"metadata.xml");
-		FileWritingUtils.writeFile(ret, solomon.toString("metadata", session));
+		String contents = solomon.toString("metadata", session);
+//System.err.println("createMetadata writing:\n" + contents);
+		FileWritingUtils.writeFile(ret, contents);
 		return ret;
 	}
 
