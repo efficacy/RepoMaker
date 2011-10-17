@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="repomaker" default="jar">
+	<property name="group" value="org.stringtree.maven"/>
 	<property name="version" value="0.9"/>
 	
     <path id="classpath">
@@ -55,19 +56,16 @@
 	      classname="org.sadun.util.ant.Pack" classpath="lib/pack.jar" />
 	    <pack 
 	      classes = "org.stringtree.maven.RepoMaker"
-	      targetJar = "dist/${ant.project.name}-${version}.jar"
+	      targetJar = "dist/${group}.${ant.project.name}-${version}.jar"
 	      manifestMainClass = "org.stringtree.maven.RepoMaker"
 	      excludePkg = "java,sun"
 	      includePkg = "com,org,javax"
 	    >
 			<classpath refid="classpath"/>
+	    	<additionalfileset file="LICENSE.txt"/>
 	    </pack>
+        <jar jarfile="dist/${group}.${ant.project.name}-${version}-sources.jar" basedir="." excludes="bin/**,.git/**,build/**,dist/**" />
         <copy file="LICENSE.txt" todir="dist" overwrite="true"/>
-    </target>
-
-    <target name="src">
-        <mkdir dir="dist"/>
-        <jar jarfile="dist/${ant.project.name}-${version}-sources.jar" basedir="." excludes="bin/**,.git/**,build/**,dist/**" />
     </target>
 
     <target name="clean">
