@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="repomaker" default="jar">
+	<property name="version" value="0.9"/>
+	
+    <path id="classpath">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+		<pathelement path="build/main"/>
+		<pathelement path="${java.class.path}"/>
+    </path>
+
+    <target name="init">
+        <tstamp/>
+    </target>
+
+    <target name="compile" depends="init">
+        <mkdir dir="build"/>
+        <mkdir dir="build/main"/>
+        <mkdir dir="build/test"/>
+
+        <javac srcdir="src/main/java" classpathref="classpath" destdir="build/main" includeantruntime="false">
+            <include name="**/*.java"/>
+        </javac>
+
+        <javac srcdir="src/test/java" classpathref="classpath" destdir="build/test" includeantruntime="false">
+			<classpath refid="class.path"/>
+            <include name="**/*.java"/>
+        </javac>
+
+        <copy file="LICENSE.txt" todir="build/main" overwrite="true"/>
+    </target>
+
+	<path id="class.path">
+		<pathelement location="lib/junit-4.8.2.jar" />
+      	<pathelement location="build/main"/>
+      	<pathelement location="build/test"/>
+	</path>
+
+	<target name="test" depends="compile">
+	    <junit>
+	      <classpath refid="class.path"/>
+	      <formatter type="brief" usefile="false" />
+			<batchtest todir="build/output">
+				<fileset dir="src/test/java">
+					<include name="**/*Test.java" />
+				</fileset>
+			</batchtest>
+	    </junit>
+	</target>
+
+    <target name="jar" depends="test">
+        <mkdir dir="dist"/>
+	    <taskdef name="pack" 
+	      classname="org.sadun.util.ant.Pack" classpath="lib/pack.jar" />
+	    <pack 
+	      classes = "org.stringtree.maven.RepoMaker"
+	      targetJar = "dist/${ant.project.name}-${version}.jar"
+	      manifestMainClass = "org.stringtree.maven.RepoMaker"
+	      excludePkg = "java,sun"
+	      includePkg = "com,org,javax"
+	    >
+			<classpath refid="classpath"/>
+	    </pack>
+        <copy file="LICENSE.txt" todir="dist" overwrite="true"/>
+    </target>
+
+    <target name="src">
+        <mkdir dir="dist"/>
+        <jar jarfile="dist/${ant.project.name}-${version}-sources.jar" basedir="." excludes="bin/**,.git/**,build/**,dist/**" />
+    </target>
+
+    <target name="clean">
+        <mkdir dir="dist"/>
+        <delete dir="dist" includes="*.jar"/>
+        <mkdir dir="build"/>
+        <delete dir="build" includes="*/*.class"/>
+    </target>
+
+</project>

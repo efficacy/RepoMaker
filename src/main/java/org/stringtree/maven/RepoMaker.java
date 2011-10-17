@@ -331,4 +331,13 @@ public class RepoMaker {
 			}
 		}
 	}
+	
+	public static void main(String[] args) throws IOException {
+		if (args.length < 2) {
+			System.out.println("usage java -jar repomaker.jar <input-dir> <output-dir>");
+			System.exit(1);
+		}
+		RepoMaker repoMaker = new RepoMaker(new File(args[0]), new File(args[1]));
+		repoMaker.make();
+	}
 }
