@@ -144,7 +144,7 @@ public class RepoMaker {
 	}
 
 	private boolean isFlatArtefact(File file) {
-		return file.getName().matches("([^\\.-]+\\.)+.*");
+		return file.getName().matches("([^\\.-]+\\.)+([^\\.-]*-)+.*");
 	}
 
 	public void derive(Stack<String> path, String id, String version, File destFile) throws IOException {
@@ -337,7 +337,11 @@ public class RepoMaker {
 			System.out.println("usage java -jar repomaker.jar <input-dir> <output-dir>");
 			System.exit(1);
 		}
-		RepoMaker repoMaker = new RepoMaker(new File(args[0]), new File(args[1]));
+		make(args[0], args[1]);
+	}
+
+	public static void make(String srcdir, String destdir) throws IOException {
+		RepoMaker repoMaker = new RepoMaker(new File(srcdir), new File(destdir));
 		repoMaker.make();
 	}
 }

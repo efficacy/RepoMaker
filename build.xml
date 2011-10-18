@@ -67,6 +67,14 @@
         <jar jarfile="dist/${group}.${ant.project.name}-${version}-sources.jar" basedir="." excludes="bin/**,.git/**,build/**,dist/**" />
         <copy file="LICENSE.txt" todir="dist" overwrite="true"/>
     </target>
+	
+	<target name="publish" depends="jar">
+		<mkdir dir="repo"/>
+        <taskdef name="repomaker" onerror="report"
+                 classname="org.stringtree.maven.RepoMakerTask"
+                 classpathref="classpath"/>
+        <repomaker srcdir="dist" destdir="repo"/>
+	</target>
 
     <target name="clean">
         <mkdir dir="dist"/>

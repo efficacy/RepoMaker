@@ -1,3 +1,4 @@
 bin/*
 *.class
 src/test/output/*
+repo/*
