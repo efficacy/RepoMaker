@@ -1,7 +1,6 @@
 TODO
 ----
 
-+ add an ant task
 + test it with a real build
 + correctly identify and process arbitrary (non-numeric) versions
 + make index files look a bit nicer (full path in header, readable file sizes etc.
@@ -16,4 +15,6 @@ DONE
 2011-10-13 process "flat" input (i.e bunch of jars org.stringtree.something-1.0.jar in the same dir
 2011-10-17 correctly identify and process arbitrary classifiers (e.g.sources)
 2011-10-17 add a main method
+2011-10-18 add an ant task
+2011-10-18 better pattern to reject non-artifact files in flat source dir
  
