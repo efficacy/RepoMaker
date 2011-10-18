@@ -20,11 +20,11 @@
         <mkdir dir="build/main"/>
         <mkdir dir="build/test"/>
 
-        <javac srcdir="src/main/java" classpathref="classpath" destdir="build/main" includeantruntime="false">
+        <javac srcdir="src/main/java" classpathref="classpath" destdir="build/main" includeantruntime="true">
             <include name="**/*.java"/>
         </javac>
 
-        <javac srcdir="src/test/java" classpathref="classpath" destdir="build/test" includeantruntime="false">
+        <javac srcdir="src/test/java" classpathref="classpath" destdir="build/test" includeantruntime="true">
 			<classpath refid="class.path"/>
             <include name="**/*.java"/>
         </javac>
@@ -32,15 +32,15 @@
         <copy file="LICENSE.txt" todir="build/main" overwrite="true"/>
     </target>
 
-	<path id="class.path">
+	<path id="testclasspath">
 		<pathelement location="lib/junit-4.8.2.jar" />
-      	<pathelement location="build/main"/>
+      	<pathelement path="classpath"/>
       	<pathelement location="build/test"/>
 	</path>
 
 	<target name="test" depends="compile">
 	    <junit>
-	      <classpath refid="class.path"/>
+	      <classpath refid="testclasspath"/>
 	      <formatter type="brief" usefile="false" />
 			<batchtest todir="build/output">
 				<fileset dir="src/test/java">
