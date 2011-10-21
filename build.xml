@@ -55,7 +55,7 @@
 	    <taskdef name="pack" 
 	      classname="org.sadun.util.ant.Pack" classpath="lib/pack.jar" />
 	    <pack 
-	      classes = "org.stringtree.maven.RepoMaker"
+	      classes = "org.stringtree.maven.RepoMaker,org.stringtree.maven.RepoMakerTask"
 	      targetJar = "dist/${group}.${ant.project.name}-${version}.jar"
 	      manifestMainClass = "org.stringtree.maven.RepoMaker"
 	      excludePkg = "java,sun"
@@ -63,6 +63,8 @@
 	    >
 			<classpath refid="classpath"/>
 	    	<additionalfileset file="LICENSE.txt"/>
+	    	<additionalfileset dir="build/main/" includes="org/stringtree/maven/RepoMakerTask.class"/>
+	    	<additionalfileset dir="src/main/resources" includes="templates/**"/>
 	    </pack>
         <jar jarfile="dist/${group}.${ant.project.name}-${version}-sources.jar" basedir="." excludes="bin/**,.git/**,build/**,dist/**" />
         <copy file="LICENSE.txt" todir="dist" overwrite="true"/>

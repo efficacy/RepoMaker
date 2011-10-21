@@ -19,13 +19,12 @@ import java.util.Stack;
 
 import org.stringtree.Context;
 import org.stringtree.context.ConvertingContext;
-import org.stringtree.converter.TemplateFileConverter;
+import org.stringtree.converter.TemplateResourceConverter;
 import org.stringtree.solomon.EasySolomon;
 import org.stringtree.solomon.Session;
 import org.stringtree.solomon.Template;
 import org.stringtree.util.FileReadingUtils;
 import org.stringtree.util.FileWritingUtils;
-import org.stringtree.util.LiteralMap;
 
 public class RepoMaker {
 
@@ -42,9 +41,7 @@ public class RepoMaker {
 		if (null == in || !this.in.exists()) {
 			throw new IOException("cannot make a repo from missing dir [" + in + "]");
 		}
-		templates = new ConvertingContext<Template>(
-			new TemplateFileConverter(new File("src/main/resources/templates"),
-				new LiteralMap<String, Boolean>(".tpl", false)));
+		templates = new ConvertingContext<Template>(new TemplateResourceConverter("templates"));
 	}
 
 	public RepoMaker(String in, String out) throws IOException {
