@@ -11,6 +11,7 @@ import java.util.Map;
 import org.stringtree.util.StringUtils;
 import org.stringtree.xml.PartialMapXMLEventHandler;
 import org.stringtree.xml.StanzaMatcher;
+import org.stringtree.xml.XMLEventHandler;
 import org.stringtree.xml.XMLEventParser;
 
 import test.MavenArtefact;
@@ -18,15 +19,16 @@ import test.MavenArtefact;
 public class PomCrawler {
 	private Collection<String> repos;
 	private Collection<MavenArtefact> dependencies;
+	
+	XMLEventParser parser;
+	XMLEventHandler handler;
 
 	public PomCrawler(String... repos) {
 		this.repos = new HashSet<String>();
 		this.repos.addAll(Arrays.asList(repos));
 		this.dependencies = new HashSet<MavenArtefact>();
-	}
 
-	public void crawl(String pom) throws IOException {
-		XMLEventParser parser = new XMLEventParser(true, true);
+		this.parser = new XMLEventParser(true, true);
 		Map<String, StanzaMatcher>matchers = new HashMap<String, StanzaMatcher>();
 		matchers.put("/project/dependencies/dependency", new StanzaMatcher() {
 			public Object match(String path, Map<?,?> values, Object context) {
@@ -37,7 +39,12 @@ public class PomCrawler {
 					));
 				return context;
 			}});
-		parser.process(new StringReader(pom), new PartialMapXMLEventHandler(matchers, false));
+		handler = new PartialMapXMLEventHandler(matchers, false);
+	}
+
+	public void crawl(String pom) throws IOException {
+		if (null == pom) throw new IOException("cannot process null POM");
+		parser.process(new StringReader(pom), handler);
 	}
 	
 	public void addRepo(String repo) {

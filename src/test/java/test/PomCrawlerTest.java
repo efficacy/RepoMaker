@@ -31,10 +31,18 @@ public class PomCrawlerTest extends TestCase {
 		assertTrue(crawler.getDependencies().isEmpty());
 	}
 	
-	public void testOneRepoOneDep() throws IOException {
+	public void testOneDep() throws IOException {
 		crawl("onerepo-onedep.xml");
 		assertTrue(new Checklist<MavenArtefact>(
 				new MavenArtefact("org.test", "single", "1.0")
+			).check(crawler.getDependencies()));
+	}
+	
+	public void testTwoDeps() throws IOException {
+		crawl("onerepo-twodeps.xml");
+		assertTrue(new Checklist<MavenArtefact>(
+				new MavenArtefact("org.test", "single", "1.0"),
+				new MavenArtefact("com.lala", "huh", "9.9-SNAPSHOT")
 			).check(crawler.getDependencies()));
 	}
 
