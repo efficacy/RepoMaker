@@ -1,0 +1,51 @@
+package org.stringtree.maven;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.stringtree.util.StringUtils;
+import org.stringtree.xml.PartialMapXMLEventHandler;
+import org.stringtree.xml.StanzaMatcher;
+import org.stringtree.xml.XMLEventParser;
+
+import test.MavenArtefact;
+
+public class PomCrawler {
+	private Collection<String> repos;
+	private Collection<MavenArtefact> dependencies;
+
+	public PomCrawler(String... repos) {
+		this.repos = new HashSet<String>();
+		this.repos.addAll(Arrays.asList(repos));
+		this.dependencies = new HashSet<MavenArtefact>();
+	}
+
+	public void crawl(String pom) throws IOException {
+		XMLEventParser parser = new XMLEventParser(true, true);
+		Map<String, StanzaMatcher>matchers = new HashMap<String, StanzaMatcher>();
+		matchers.put("/project/dependencies/dependency", new StanzaMatcher() {
+			public Object match(String path, Map<?,?> values, Object context) {
+				dependencies.add(new MavenArtefact(
+						StringUtils.nullToEmpty(values.get("/project/dependencies/dependency/groupId")), 
+						StringUtils.nullToEmpty(values.get("/project/dependencies/dependency/artifactId")), 
+						StringUtils.nullToEmpty(values.get("/project/dependencies/dependency/version"))
+					));
+				return context;
+			}});
+		parser.process(new StringReader(pom), new PartialMapXMLEventHandler(matchers, false));
+	}
+	
+	public void addRepo(String repo) {
+		repos.add(repo);
+	}
+
+	public Collection<MavenArtefact> getDependencies() {
+		return dependencies;
+	}
+
+}
