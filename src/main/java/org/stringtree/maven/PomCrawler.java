@@ -17,6 +17,8 @@ import org.stringtree.xml.XMLEventParser;
 import test.MavenArtefact;
 
 public class PomCrawler {
+	private static final String DEPENDENCY = "/project/dependencies/dependency";
+	
 	private Collection<String> repos;
 	private Collection<MavenArtefact> dependencies;
 	
@@ -30,12 +32,12 @@ public class PomCrawler {
 
 		this.parser = new XMLEventParser(true, true);
 		Map<String, StanzaMatcher>matchers = new HashMap<String, StanzaMatcher>();
-		matchers.put("/project/dependencies/dependency", new StanzaMatcher() {
+		matchers.put(DEPENDENCY, new StanzaMatcher() {
 			public Object match(String path, Map<?,?> values, Object context) {
 				dependencies.add(new MavenArtefact(
-						StringUtils.nullToEmpty(values.get("/project/dependencies/dependency/groupId")), 
-						StringUtils.nullToEmpty(values.get("/project/dependencies/dependency/artifactId")), 
-						StringUtils.nullToEmpty(values.get("/project/dependencies/dependency/version"))
+						StringUtils.nullToEmpty(values.get(DEPENDENCY +"/groupId")), 
+						StringUtils.nullToEmpty(values.get(DEPENDENCY +"/artifactId")), 
+						StringUtils.nullToEmpty(values.get(DEPENDENCY +"/version"))
 					));
 				return context;
 			}});
