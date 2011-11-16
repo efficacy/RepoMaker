@@ -41,7 +41,11 @@ public class RepoMaker {
 		if (null == in || !this.in.exists()) {
 			throw new IOException("cannot make a repo from missing dir [" + in + "]");
 		}
-		templates = new ConvertingContext<Template>(new TemplateResourceConverter("templates"));
+		if (null == out || !out.exists()) {
+			throw new IOException("cannot make a repo to missing dir [" + out + "]");
+		}
+		TemplateResourceConverter converter = new TemplateResourceConverter("templates/");
+		templates = new ConvertingContext<Template>(converter);
 	}
 
 	public RepoMaker(String in, String out) throws IOException {
