@@ -20,8 +20,10 @@ public class RepoMakerTestCase extends TestCase {
 	}
 	
 	protected File make(String from, String to) throws IOException {
-		RepoMaker maker = new RepoMaker("src/test/input/" + from, "src/test/output/" + to);
-		generated = new File("src/test/output/" + to);
+		String in = "src/test/input/" + from;
+		String out = "src/test/output/" + to;
+		RepoMaker maker = new RepoMaker(in, out);
+		generated = new File(out);
 		maker.make();
 		return generated;
 	}
